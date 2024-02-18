@@ -18,9 +18,27 @@ public struct ShopMapDTO: Codable, Equatable {
   let shopType: String
   let shopMoods: [String]
   let like: Bool
+  
+  func convert() -> ShopInfoModel {
+    return .init(
+      id: shopId,
+      info: self
+    )
+  }
 }
 
-struct ShopInfoModel: Identifiable, Equatable {
-  var id: Int
-  var info: ShopMapDTO
+public struct ShopInfoModel: Identifiable, Equatable {
+  public var id: Int
+  public var info: ShopMapDTO
 }
+
+//public struct ShopInfo: Identifiable {
+//  public let id: Int
+//  let latitude, longitude: Int
+//  let businessHour, imgUrl, address, phone: String
+//  let name: String
+//  let meter: Int
+//  let shopType: String
+//  let shopMoods: [String]
+//  let like: Bool
+//}

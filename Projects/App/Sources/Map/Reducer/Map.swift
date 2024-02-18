@@ -34,7 +34,8 @@ public struct Map: Reducer {
           shopType: "",
           shopMoods: ["양식", "프랑스", "파스타", "파스타", "파스타"],
           like: true
-        ))
+        )
+      )
     ] // 테스트
     var filterCategory: ShopCategoryType = .all
     
@@ -63,7 +64,12 @@ public struct Map: Reducer {
     // MARK: - Inner Business Action
     case _onAppear
     case _checkLocation
+    case _userLocationIsEnabled(Bool)
     case _getShopInfo
+    case _setShopInfo(IdentifiedArrayOf<ShopInfoModel>)
+//    case _handleShopInfoResponse(Result<[ShopMapDTO], Error>)
+    case _networkError
+    case _renewalMap
     case _changeBottomSheet(height: ShopSheetHeight)
     case _activeProgressView(Bool)
     case _moveNavigationView(Bool)
@@ -79,7 +85,58 @@ public struct Map: Reducer {
   public func reduce(into state: inout State, action: Action) -> Effect<Action> {
     switch action {
     case ._onAppear:
-      state.coordinator.checkIfLocationServiceIsEnabled()
+      print("🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️1")
+      state.coordinator.cameraMovedAction = {
+        print("온어피어에서 주입 완료~")
+//          Effect
+      }
+      return .send(._checkLocation)
+      
+    case ._checkLocation:
+      print("🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️2")
+      let coordinator = state.coordinator
+      return .run { send in
+        print("🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️3")
+        let result = await coordinator.checkIfLocationServiceIsEnabled()
+        print("🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️4")
+        await send(._userLocationIsEnabled(result))
+      }
+      
+    case let ._userLocationIsEnabled(result):
+      print("🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️🙇‍♀️5 \(result)")
+      if result {
+        return .send(._getShopInfo)
+      } else {
+        return .none
+      }
+      
+    case ._getShopInfo:
+      print("1️⃣1️⃣1️⃣1️⃣1️⃣1️⃣1️⃣1️⃣1️⃣")
+      let coordinator = state.coordinator
+      let cameraEdge = coordinator.getCameraAnglePostion()
+      let cameraCenter = coordinator.getCameraCenterPosition()
+      let category = state.filterCategory
+      return .run { send in
+        let result = await mapService.getShopsInfoOf(
+          category, cameraCenter.latitude, cameraCenter.longitude,
+          cameraEdge.leftTopLatitude, cameraEdge.leftTopLongitude,
+          cameraEdge.rightBottomLatitude, cameraEdge.rightBottomLongitude
+        )
+        switch result {
+        case let .success(data):
+          print(data)
+          guard !data.isEmpty else { return } // 아무 일도 일어나지 않는다. 빈 데이터이기 때문
+          let model = data.map{ $0.convert() }
+          print(model)
+          return await send(._setShopInfo(.init(uniqueElements: model)))
+        case .failure:
+          print("실패?")
+          return await send(._networkError)
+        }
+      }
+    
+    case let ._setShopInfo(data):
+      state.shopList = data
       return .none
       
     case .tappedCurrentUserLocationMarker:

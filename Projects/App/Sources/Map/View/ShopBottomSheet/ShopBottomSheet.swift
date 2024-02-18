@@ -53,7 +53,7 @@ struct ShopBottomSheet<Content>: View where Content: View {
   @GestureState private var translation: CGFloat = 0
   @State private var coverOpacity: CGFloat = 1
   private let defaultBackGroundColor = WineyKitAsset.gray950.swiftUIColor
-  private let closedBackGroundColor = WineyKitAsset.gray900.swiftUIColor
+  //  private let closedBackGroundColor = WineyKitAsset.gray900.swiftUIColor
   
   private let limitDragGap: CGFloat = 120
   private var dragGesture: some Gesture {
@@ -91,7 +91,6 @@ struct ShopBottomSheet<Content>: View where Content: View {
             height = .large
           }
         }
-        //        coverOpacity = height != .close ? 0 : 1.0
       }
   }
   
@@ -100,9 +99,9 @@ struct ShopBottomSheet<Content>: View where Content: View {
     case .large:
       return 0
     case .medium:
-      return ShopSheetHeight.large.rawValue - ShopSheetHeight.medium.rawValue
+      return ShopSheetHeight.large.height - ShopSheetHeight.medium.height
     case .close:
-      return ShopSheetHeight.large.rawValue - ShopSheetHeight.close.rawValue
+      return ShopSheetHeight.large.height - ShopSheetHeight.close.height
     }
   }
   
@@ -111,12 +110,6 @@ struct ShopBottomSheet<Content>: View where Content: View {
       ZStack {
         Rectangle()
           .fill(defaultBackGroundColor)
-        
-        Rectangle()
-          .fill(closedBackGroundColor)
-          .opacity(coverOpacity)
-        //          .opacity(presentProgress ? 0 : coverOpacity)
-          .disabled(true)
       }
       .frame(height: 25)
       
@@ -138,12 +131,6 @@ struct ShopBottomSheet<Content>: View where Content: View {
               defaultBackGroundColor
                 .edgesIgnoringSafeArea(.bottom)
               
-              closedBackGroundColor
-                .edgesIgnoringSafeArea(.bottom)
-                .opacity(coverOpacity)
-              //                  .opacity(presentProgress ? 0 : coverOpacity)
-                .disabled(true)
-              
               if presentProgress {
                 VStack {
                   progressView
@@ -159,16 +146,29 @@ struct ShopBottomSheet<Content>: View where Content: View {
       }
       .frame(
         width: geometry.size.width,
-        height: ShopSheetHeight.large.rawValue
+        height: ShopSheetHeight.large.height
       )
-      .frame(height: geometry.size.height, alignment: .bottom)
+      .task {
+        print("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥")
+//        print(geometry.size.width, geometry.size.height)
+//        print(geometry.size.width, geometry.safeAreaInsets.top, geometry.safeAreaInsets.bottom)
+        print(ShopSheetHeight.large)
+        print(UIScreen.main.bounds.height)
+        print("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥")
+      }
+      //      .frame(height: geometry.size.height, alignment: .bottom)
+      .frame(
+        height: geometry.size.height + geometry.safeAreaInsets.top +  geometry.safeAreaInsets.bottom,
+        alignment: .bottom
+      )
+      
       .offset(y: max(self.offset + self.translation, 0))
-//      .onChange(of: height) {
-//        coverOpacity = height != .close ? 0 : 1
-//      }
-//      .onChange(of: presentProgress) {
-//        height = presentProgress ? .close : .medium
-//      }
+      //      .onChange(of: height) {
+      //        coverOpacity = height != .close ? 0 : 1
+      //      }
+      //      .onChange(of: presentProgress) {
+      //        height = presentProgress ? .close : .medium
+      //      }
     }
     .highPriorityGesture(
       presentProgress ? nil : dragGesture
@@ -194,8 +194,19 @@ struct ShopBottomSheet<Content>: View where Content: View {
   }
 }
 
-public enum ShopSheetHeight: Double, Equatable {
-  case close = 115
-  case medium = 526
-  case large = 676
+public enum ShopSheetHeight {
+  case close
+  case medium
+  case large
+  
+  var height: CGFloat {
+    switch self {
+    case .close:
+      return UIScreen.main.bounds.height * 0.22
+    case .medium:
+      return UIScreen.main.bounds.height * 0.74
+    case .large:
+      return UIScreen.main.bounds.height * 0.91
+    }
+  }
 }

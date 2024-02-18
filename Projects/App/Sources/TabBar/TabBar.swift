@@ -113,7 +113,7 @@ public struct TabBar: Reducer {
         return .send(._setTabHiddenStatus(true))
         
       case .map(.routeAction(_, action: .map(._tabBarOpen))):
-        return .send(._setTabHiddenStatus(false))
+        return .send(._setTabHiddenStatus(true)) // 원래 false, 바텀시트 위치 확인 위한 ..
         
       case .note:
         return .none
