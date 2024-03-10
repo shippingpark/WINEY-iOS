@@ -34,7 +34,8 @@ extension MapService {
       getShopsInfoOf: {
         shopCategory,
         latitude, longitude,
-        leftTopLatitude, leftTopLongitude, rightBottomLatitude, rightBottomLongitude in
+        leftTopLatitude, leftTopLongitude, 
+        rightBottomLatitude, rightBottomLongitude in
         return await Provider<MapAPI>
           .init()
           .request(

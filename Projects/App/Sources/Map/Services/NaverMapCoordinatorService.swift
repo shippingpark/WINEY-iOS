@@ -207,64 +207,68 @@ public final class NaverMapCoordinator:
       }
     }
   }
-    
-    func fetchUserLocation() {
-      if let locationManager = locationManager {
-        let lat = locationManager.location?.coordinate.latitude
-        let lng = locationManager.location?.coordinate.longitude
-        let cameraUpdate = NMFCameraUpdate(scrollTo: NMGLatLng(lat: lat ?? 0.0, lng: lng ?? 0.0), zoomTo: 15)
-        cameraUpdate.animation = .easeIn
-        cameraUpdate.animationDuration = 1
-        
-        let locationOverlay = view.mapView.locationOverlay
-        locationOverlay.location = NMGLatLng(lat: lat ?? 0.0, lng: lng ?? 0.0)
-        locationOverlay.hidden = false
-        
-        locationOverlay.icon = NMFOverlayImage(name: "location_overlay_icon")
-        locationOverlay.iconWidth = CGFloat(NMF_LOCATION_OVERLAY_SIZE_AUTO)
-        locationOverlay.iconHeight = CGFloat(NMF_LOCATION_OVERLAY_SIZE_AUTO)
-        locationOverlay.anchor = CGPoint(x: 0.5, y: 1)
-        
-        let marker = NMFMarker() // 마커 테스트
-        marker.position = NMGLatLng(lat: lat ?? 0.0, lng: lng ?? 0.0)
-        
-        let marker2 = NMFMarker() // 마커 테스트
-        marker2.position = NMGLatLng(lat: (lat ?? 0.0) + 0.001, lng: (lng ?? 0.0) + 0.001)
-        
-        // NMGLatLng(lat: 37.5670135, lng: 126.9783740)
-        marker.mapView = view.mapView
-        marker2.mapView = view.mapView
-        
-        marker.iconImage = NMFOverlayImage(name: "dot_marker")
-        marker.width = 29 // 닷
-        marker.height = 29
-        
-        marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
-          marker.iconImage = NMFOverlayImage(name: "clicked_marker")
-          marker.width = 43.29 // 닷
-          marker.height = 63
-          return true
-        }
-        
-        marker2.touchHandler = { (overlay: NMFOverlay) -> Bool in
-          print("marker2 눌림 ")
-          return true
-        }
-        
-        
-        
-        marker.isHideCollidedMarkers = true
-        marker.isForceShowIcon = true
-        marker2.isHideCollidedMarkers = true
-        marker2.isForceShowIcon = true
-        
-        view.mapView.positionMode = .direction
-        view.mapView.moveCamera(cameraUpdate)
-        
+  
+  func fetchUserLocation() {
+    if let locationManager = locationManager {
+      let lat = locationManager.location?.coordinate.latitude
+      let lng = locationManager.location?.coordinate.longitude
+      let cameraUpdate = NMFCameraUpdate(scrollTo: NMGLatLng(lat: lat ?? 0.0, lng: lng ?? 0.0), zoomTo: 15)
+      cameraUpdate.animation = .easeIn
+      cameraUpdate.animationDuration = 1
+      
+      let locationOverlay = view.mapView.locationOverlay
+      locationOverlay.location = NMGLatLng(lat: lat ?? 0.0, lng: lng ?? 0.0)
+      locationOverlay.hidden = false
+      
+      locationOverlay.icon = NMFOverlayImage(name: "location_overlay_icon")
+      locationOverlay.iconWidth = CGFloat(NMF_LOCATION_OVERLAY_SIZE_AUTO)
+      locationOverlay.iconHeight = CGFloat(NMF_LOCATION_OVERLAY_SIZE_AUTO)
+      locationOverlay.anchor = CGPoint(x: 0.5, y: 1)
+      
+      let marker = NMFMarker() // 마커 테스트
+      marker.position = NMGLatLng(lat: lat ?? 0.0, lng: lng ?? 0.0)
+      
+      let marker2 = NMFMarker() // 마커 테스트
+      marker2.position = NMGLatLng(lat: (lat ?? 0.0) + 0.001, lng: (lng ?? 0.0) + 0.001)
+      
+      // NMGLatLng(lat: 37.5670135, lng: 126.9783740)
+      marker.mapView = view.mapView
+      marker2.mapView = view.mapView
+      
+      marker.iconImage = NMFOverlayImage(name: "dot_marker")
+      marker.width = 29 // 닷
+      marker.height = 29
+      
+      marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
+        marker.iconImage = NMFOverlayImage(name: "clicked_marker")
+        marker.width = 43.29 // 닷
+        marker.height = 63
+        return true
       }
-    }
-    
-    func getNaverMapView() -> NMFNaverMapView {
-      view
+      
+      marker2.touchHandler = { (overlay: NMFOverlay) -> Bool in
+        print("marker2 눌림 ")
+        return true
+      }
+      
+      
+      
+      marker.isHideCollidedMarkers = true
+      marker.isForceShowIcon = true
+      marker2.isHideCollidedMarkers = true
+      marker2.isForceShowIcon = true
+      
+      view.mapView.positionMode = .direction
+      view.mapView.moveCamera(cameraUpdate)
+      
     }
   }
+  
+  var whatIWantToDoWhenMarkerClicked: (() -> Void)?
+  
+  func getNaverMapView() -> NMFNaverMapView {
+    view
+  }
+}
+
+

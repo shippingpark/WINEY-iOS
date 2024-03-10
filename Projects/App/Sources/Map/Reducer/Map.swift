@@ -160,7 +160,8 @@ public struct Map: Reducer {
       
     case .tappedReloadCurrentMap:
       alertService.showAlert("아직... 연결되지 못한 기능입니다😭")
-      return .none
+      return .send(._checkLocation)
+//      return .none
       
     case let .tappedBookMark(index):
       // API 호출
